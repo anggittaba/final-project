@@ -1,68 +1,75 @@
 ﻿using System;
 using System.Collections.Generic;
+using RentalKendaraanMVC.Controllers;
 using RentalKendaraanMVC.Models;
 
 namespace RentalKendaraanMVC.Views
 {
-    class KendaraanView
+    public class KendaraanView
     {
-        public void TampilData(List<Kendaraan> listKendaraan)
+        private KendaraanController kendaraanController;
+
+        public KendaraanView(KendaraanController kendaraanController)
         {
-            Console.Clear();
-            Console.WriteLine("Data Kendaraan");
-            Console.WriteLine("=============");
-            foreach (Kendaraan kendaraan in listKendaraan)
-            {
-                Console.WriteLine("ID Kendaraan : {0}", kendaraan.ID_Kendaraan);
-                Console.WriteLine("Jenis Kendaraan : {0}", kendaraan.Jenis_Kendaraan);
-                Console.WriteLine("Merk Kendaraan : {0}", kendaraan.Merk_Kendaraan);
-                Console.WriteLine("Tahun Produksi : {0}", kendaraan.Tahun_Produksi);
-                Console.WriteLine();
-            }
-            Console.WriteLine("Tekan enter untuk kembali ke menu");
-            Console.ReadLine();
+            this.kendaraanController = kendaraanController;
         }
 
-        public Kendaraan TambahData()
+        public void ShowMenu()
         {
             Console.Clear();
-            Console.WriteLine("Tambah Data Kendaraan");
-            Console.WriteLine("=====================");
-            Kendaraan kendaraan = new Kendaraan();
-            Console.Write("Jenis Kendaraan : ");
-            kendaraan.Jenis_Kendaraan = Console.ReadLine();
-            Console.Write("Merk Kendaraan : ");
-            kendaraan.Merk_Kendaraan = Console.ReadLine();
-            Console.Write("Tahun Produksi : ");
-            kendaraan.Tahun_Produksi = int.Parse(Console.ReadLine());
-            return kendaraan;
+            Console.WriteLine("===== MENU KENDARAAN =====");
+            Console.WriteLine("1. Tambah Kendaraan");
+            Console.WriteLine("2. Update Kendaraan");
+            Console.WriteLine("3. Hapus Kendaraan");
+            Console.WriteLine("4. Tampilkan Semua Kendaraan");
+            Console.WriteLine("5. Cari Kendaraan");
+            Console.WriteLine("0. Keluar");
+            Console.WriteLine("==========================");
         }
 
-        public int HapusData()
+        public void TambahKendaraan()
         {
             Console.Clear();
-            Console.WriteLine("Hapus Data Kendaraan");
-            Console.WriteLine("====================");
-            Console.Write("ID Kendaraan yang dihapus : ");
-            int id = int.Parse(Console.ReadLine());
-            return id;
+            Console.WriteLine("===== TAMBAH KENDARAAN =====");
+            kendaraanController.CreateKendaraan();
+            Console.WriteLine("Tekan sembarang tombol untuk kembali ke menu...");
+            Console.ReadKey();
         }
 
-        public Kendaraan UbahData()
+        public void UpdateKendaraan()
         {
             Console.Clear();
-            Console.WriteLine("Ubah Data Kendaraan");
-            Console.WriteLine("===================");
-            Kendaraan kendaraan = new Kendaraan();
-            Console.Write("ID Kendaraan yang diubah : ");
-            kendaraan.ID_Kendaraan = int.Parse(Console.ReadLine());
-            Console.Write("Jenis Kendaraan : ");
-            kendaraan.Jenis_Kendaraan = Console.ReadLine();
-            Console.Write("Merk Kendaraan : ");
-            kendaraan.Merk_Kendaraan = Console.ReadLine();
-            Console.Write("Tahun Produksi : ");
-            kendaraan.Tahun_Produksi = int.Parse(Console.ReadLine());
-            return kendaraan;
+            Console.WriteLine("===== UPDATE KENDARAAN =====");
+            kendaraanController.UpdateKendaraan();
+            Console.WriteLine("Tekan sembarang tombol untuk kembali ke menu...");
+            Console.ReadKey();
+        }
+
+        public void HapusKendaraan()
+        {
+            Console.Clear();
+            Console.WriteLine("===== HAPUS KENDARAAN =====");
+            kendaraanController.DeleteKendaraan();
+            Console.WriteLine("Tekan sembarang tombol untuk kembali ke menu...");
+            Console.ReadKey();
+        }
+
+        public void TampilkanSemuaKendaraan()
+        {
+            Console.Clear();
+            Console.WriteLine("===== DAFTAR KENDARAAN =====");
+            kendaraanController.GetAllKendaraan();
+            Console.WriteLine("Tekan sembarang tombol untuk kembali ke menu...");
+            Console.ReadKey();
+        }
+
+        public void CariKendaraan()
+        {
+            Console.Clear();
+            Console.WriteLine("===== CARI KENDARAAN =====");
+            kendaraanController.GetKendaraanById();
+            Console.WriteLine("Tekan sembarang tombol untuk kembali ke menu...");
+            Console.ReadKey();
         }
     }
 }

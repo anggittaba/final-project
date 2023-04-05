@@ -3,12 +3,12 @@ using RentalKendaraanMVC.Models;
 
 namespace RentalKendaraanMVC.Interfaces
 {
-    public interface IKendaraan
+    public interface IKendaraanRepository
     {
+        void Create(Kendaraan kendaraan);
+        void Update(Kendaraan kendaraan);
+        void Delete(int id);
         List<Kendaraan> GetAll();
         Kendaraan GetById(int id);
-        bool Insert(Kendaraan kendaraan);
-        bool Update(int id, Kendaraan kendaraan);
-        bool Delete(int id);
     }
 }

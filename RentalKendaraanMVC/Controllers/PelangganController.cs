@@ -6,102 +6,114 @@ using RentalKendaraanMVC.Views;
 
 namespace RentalKendaraanMVC.Controllers
 {
-    public class PelangganController : IPelanggan
+    public class PelangganController
     {
-        private Pelanggan pelangganModel;
-        private PelangganView pelangganView;
+        private IPelangganRepository pelangganRepository;
 
-        public PelangganController()
+        public PelangganController(IPelangganRepository pelangganRepository)
         {
-            pelangganModel = new Pelanggan();
-            pelangganView = new PelangganView();
+            this.pelangganRepository = pelangganRepository;
         }
 
-        public void TampilData()
+        public void CreatePelanggan()
         {
-            List<Pelanggan> listPelanggan = GetAll();
-            pelangganView.TampilData(listPelanggan);
-        }
-
-        public void TambahData()
-        {
-            pelangganView.TambahData();
-            string nama = Console.ReadLine();
-            string jenis_kelamin = Console.ReadLine();
-            string alamat = Console.ReadLine();
-            string no_hp = Console.ReadLine();
-            Pelanggan pelanggan = new Pelanggan()
-            {
-                Nama_Pelanggan = nama,
-                Alamat = alamat,
-                No_Telp = no_hp
-            };
-            Insert(pelanggan);
-        }
-
-        public void UbahData()
-        {
-            pelangganView.UbahData();
+            Console.WriteLine("Masukkan ID Pelanggan:");
             int id = int.Parse(Console.ReadLine());
+            Console.WriteLine("Masukkan Nama Pelanggan:");
             string nama = Console.ReadLine();
-
+            Console.WriteLine("Masukkan Alamat Pelanggan:");
             string alamat = Console.ReadLine();
-            string no_hp = Console.ReadLine();
-            Pelanggan pelanggan = new Pelanggan()
+            Console.WriteLine("Masukkan No. Telp Pelanggan:");
+            string noTelp = Console.ReadLine();
+
+            Pelanggan pelanggan = new Pelanggan
             {
                 ID_Pelanggan = id,
                 Nama_Pelanggan = nama,
-                Alamat = alamat,
-                No_Telp = no_hp
+                Alamat_Pelanggan = alamat,
+                No_Telp_Pelanggan = noTelp
             };
-            Update(id, pelanggan);
-        }
 
-        public void HapusData()
+            pelangganRepository.Create(pelanggan);
+            Console.WriteLine ("Pelanggan berhasil ditambahkan!");
+
+        }
+        public void UpdatePelanggan()
         {
-            pelangganView.HapusData();
+            Console.WriteLine("Masukkan ID Pelanggan yang ingin diupdate:");
             int id = int.Parse(Console.ReadLine());
-            Delete(id);
+
+            Pelanggan pelanggan = pelangganRepository.GetById(id);
+
+            if (pelanggan == null)
+            {
+                Console.WriteLine("Pelanggan dengan ID tersebut tidak ditemukan!");
+                return;
+            }
+
+            Console.WriteLine("Masukkan Nama Pelanggan:");
+            string nama = Console.ReadLine();
+            Console.WriteLine("Masukkan Alamat Pelanggan:");
+            string alamat = Console.ReadLine();
+            Console.WriteLine("Masukkan No. Telp Pelanggan:");
+            string noTelp = Console.ReadLine();
+
+            pelanggan.Nama_Pelanggan = nama;
+            pelanggan.Alamat_Pelanggan = alamat;
+            pelanggan.No_Telp_Pelanggan = noTelp;
+
+            pelangganRepository.Update(pelanggan);
+            Console.WriteLine("Pelanggan berhasil diupdate!");
         }
 
-        public List<Pelanggan> GetAll()
+        public void DeletePelanggan()
         {
-            return pelangganModel.GetAll();
+            Console.WriteLine("Masukkan ID Pelanggan yang ingin dihapus:");
+            int id = int.Parse(Console.ReadLine());
+
+            Pelanggan pelanggan = pelangganRepository.GetById(id);
+
+            if (pelanggan == null)
+            {
+                Console.WriteLine("Pelanggan dengan ID tersebut tidak ditemukan!");
+                return;
+            }
+
+            pelangganRepository.Delete(id);
+            Console.WriteLine("Pelanggan berhasil dihapus!");
         }
 
-        public Pelanggan GetById(int id)
+        public void GetAllPelanggan()
         {
-            return pelangganModel.GetById(id);
+            List<Pelanggan> pelangganList = pelangganRepository.GetAll();
+
+            if (pelangganList.Count == 0)
+            {
+                Console.WriteLine("Tidak ada data pelanggan!");
+                return;
+            }
+
+            Console.WriteLine("Daftar Pelanggan:");
+            foreach (Pelanggan pelanggan in pelangganList)
+            {
+                Console.WriteLine($"ID Pelanggan: {pelanggan.ID_Pelanggan}, Nama Pelanggan: {pelanggan.Nama_Pelanggan}, Alamat Pelanggan: {pelanggan.Alamat_Pelanggan}, No. Telp Pelanggan: {pelanggan.No_Telp_Pelanggan}");
+            }
         }
 
-        public void Insert(Pelanggan pelanggan)
+        public void GetPelangganById()
         {
-            pelangganModel.TambahData(pelanggan);
-        }
+            Console.WriteLine("Masukkan ID Pelanggan yang ingin ditampilkan:");
+            int id = int.Parse(Console.ReadLine());
 
-        public void Update(int id, Pelanggan pelanggan)
-        {
-            pelangganModel.UbahData(pelanggan);
-        }
+            Pelanggan pelanggan = pelangganRepository.GetById(id);
 
-        public void Delete(int id)
-        {
-            pelangganModel.HapusData(id);
-        }
+            if (pelanggan == null)
+            {
+                Console.WriteLine("Pelanggan dengan ID tersebut tidak ditemukan!");
+                return;
+            }
 
-        bool IPelanggan.Insert(Pelanggan pelanggan)
-        {
-            throw new NotImplementedException();
-        }
-
-        bool IPelanggan.Update(int id, Pelanggan pelanggan)
-        {
-            throw new NotImplementedException();
-        }
-
-        bool IPelanggan.Delete(int id)
-        {
-            throw new NotImplementedException();
+            Console.WriteLine($"ID Pelanggan: {pelanggan.ID_Pelanggan}, Nama Pelanggan: {pelanggan.Nama_Pelanggan}, Alamat Pelanggan: {pelanggan.Alamat_Pelanggan}, No. Telp Pelanggan: {pelanggan.No_Telp_Pelanggan}");
         }
     }
 }

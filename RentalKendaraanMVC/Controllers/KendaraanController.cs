@@ -6,100 +6,114 @@ using RentalKendaraanMVC.Views;
 
 namespace RentalKendaraanMVC.Controllers
 {
-    public class KendaraanController : IKendaraan
+    public class KendaraanController
     {
-        private Kendaraan kendaraanModel;
-        private KendaraanView kendaraanView;
+        private IKendaraanRepository kendaraanRepository;
 
-        public KendaraanController()
+        public KendaraanController(IKendaraanRepository kendaraanRepository)
         {
-            kendaraanModel = new Kendaraan();
-            kendaraanView = new KendaraanView();
+            this.kendaraanRepository = kendaraanRepository;
         }
 
-        public void TampilData()
+        public void CreateKendaraan()
         {
-            List<Kendaraan> listKendaraan = GetAll();
-            kendaraanView.TampilData(listKendaraan);
-        }
-
-        public void TambahData()
-        {
-            kendaraanView.TambahData();
-            string jenis = Console.ReadLine();
-            string merk = Console.ReadLine();
-            int tahun = int.Parse(Console.ReadLine());
-            Kendaraan kendaraan = new Kendaraan()
-            {
-                Jenis_Kendaraan = jenis,
-                Merk_Kendaraan = merk,
-                Tahun_Produksi = tahun
-            };
-            Insert(kendaraan);
-        }
-
-        public void UbahData()
-        {
-            kendaraanView.UbahData();
+            Console.WriteLine("Masukkan ID Kendaraan:");
             int id = int.Parse(Console.ReadLine());
+            Console.WriteLine("Masukkan Jenis Kendaraan:");
             string jenis = Console.ReadLine();
+            Console.WriteLine("Masukkan Merk Kendaraan:");
             string merk = Console.ReadLine();
+            Console.WriteLine("Masukkan Tahun Produksi Kendaraan:");
             int tahun = int.Parse(Console.ReadLine());
-            Kendaraan kendaraan = new Kendaraan()
+
+            Kendaraan kendaraan = new Kendaraan
             {
                 ID_Kendaraan = id,
                 Jenis_Kendaraan = jenis,
                 Merk_Kendaraan = merk,
                 Tahun_Produksi = tahun
             };
-            Update(id, kendaraan);
+
+            kendaraanRepository.Create(kendaraan);
+            Console.WriteLine("Kendaraan berhasil ditambahkan!");
         }
 
-        public void HapusData()
+        public void UpdateKendaraan()
         {
-            kendaraanView.HapusData();
+            Console.WriteLine("Masukkan ID Kendaraan yang ingin diupdate:");
             int id = int.Parse(Console.ReadLine());
-            Delete(id);
+
+            Kendaraan kendaraan = kendaraanRepository.GetById(id);
+
+            if (kendaraan == null)
+            {
+                Console.WriteLine("Kendaraan dengan ID tersebut tidak ditemukan!");
+                return;
+            }
+
+            Console.WriteLine("Masukkan Jenis Kendaraan:");
+            string jenis = Console.ReadLine();
+            Console.WriteLine("Masukkan Merk Kendaraan:");
+            string merk = Console.ReadLine();
+            Console.WriteLine("Masukkan Tahun Produksi Kendaraan:");
+            int tahun = int.Parse(Console.ReadLine());
+
+            kendaraan.Jenis_Kendaraan = jenis;
+            kendaraan.Merk_Kendaraan = merk;
+            kendaraan.Tahun_Produksi = tahun;
+
+            kendaraanRepository.Update(kendaraan);
+            Console.WriteLine("Kendaraan berhasil diupdate!");
         }
 
-        public List<Kendaraan> GetAll()
+        public void DeleteKendaraan()
         {
-            return kendaraanModel.GetAll();
+            Console.WriteLine("Masukkan ID Kendaraan yang ingin dihapus:");
+            int id = int.Parse(Console.ReadLine());
+
+            Kendaraan kendaraan = kendaraanRepository.GetById(id);
+
+            if (kendaraan == null)
+            {
+                Console.WriteLine("Kendaraan dengan ID tersebut tidak ditemukan!");
+                return;
+            }
+
+            kendaraanRepository.Delete(id);
+            Console.WriteLine("Kendaraan berhasil dihapus!");
         }
 
-        public Kendaraan GetById(int id)
+        public void GetAllKendaraan()
         {
-            return kendaraanModel.GetById(id);
+            List<Kendaraan> kendaraanList = kendaraanRepository.GetAll();
+
+            if (kendaraanList.Count == 0)
+            {
+                Console.WriteLine("Tidak ada data kendaraan!");
+                return;
+            }
+
+            Console.WriteLine("Daftar Kendaraan:");
+            foreach (Kendaraan kendaraan in kendaraanList)
+            {
+                Console.WriteLine($"ID Kendaraan: {kendaraan.ID_Kendaraan}, Jenis Kendaraan: {kendaraan.Jenis_Kendaraan}, Merk Kendaraan: {kendaraan.Merk_Kendaraan}, Tahun Produksi: {kendaraan.Tahun_Produksi}");
+            }
         }
 
-        public void Insert(Kendaraan kendaraan)
+        public void GetKendaraanById()
         {
-            kendaraanModel.TambahData(kendaraan);
-        }
+            Console.WriteLine("Masukkan ID Kendaraan yang ingin ditampilkan:");
+            int id = int.Parse(Console.ReadLine());
 
-        public void Update(int id, Kendaraan kendaraan)
-        {
-            kendaraanModel.UbahData(kendaraan);
-        }
+            Kendaraan kendaraan = kendaraanRepository.GetById(id);
 
-        public void Delete(int id)
-        {
-            kendaraanModel.HapusData(id);
-        }
+            if (kendaraan == null)
+            {
+                Console.WriteLine("Kendaraan dengan ID tersebut tidak ditemukan!");
+                return;
+            }
 
-        bool IKendaraan.Insert(Kendaraan kendaraan)
-        {
-            throw new NotImplementedException();
-        }
-
-        bool IKendaraan.Update(int id, Kendaraan kendaraan)
-        {
-            throw new NotImplementedException();
-        }
-
-        bool IKendaraan.Delete(int id)
-        {
-            throw new NotImplementedException();
+            Console.WriteLine($"ID Kendaraan: {kendaraan.ID_Kendaraan}, Jenis Kendaraan: {kendaraan.Jenis_Kendaraan}, Merk Kendaraan: {kendaraan.Merk_Kendaraan}, Tahun Produksi: {kendaraan.Tahun_Produksi}");
         }
     }
 }

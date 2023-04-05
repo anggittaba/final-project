@@ -1,104 +1,113 @@
-﻿using System;
+﻿using RentalKendaraanMVC.Models;
+using RentalKendaraanMVC.Repositories;
+using System;
 using System.Collections.Generic;
-using RentalKendaraanMVC.Interfaces;
-using RentalKendaraanMVC.Models;
-using RentalKendaraanMVC.Views;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace RentalKendaraanMVC.Controllers
 {
-    public class ReservasiController : IReservasi
+    public class ReservasiController
     {
-        private Reservasi reservasiModel;
-        private ReservasiView reservasiView;
+        private ReservasiRepository reservasiRepository = new ReservasiRepository(DBConnection.GetConnection());
 
-        public ReservasiController()
-        {
-            reservasiModel = new Reservasi();
-            reservasiView = new ReservasiView();
-        }
+        private PelangganRepository pelangganRepository = new PelangganRepository(DBConnection.GetConnection());
 
-        public void TampilData()
-        {
-            List<Reservasi> listReservasi = GetAll();
-            reservasiView.TampilData(listReservasi);
-        }
+        private KendaraanRepository kendaraanRepository = new KendaraanRepository(DBConnection.GetConnection());
 
-        public void TambahData()
+        public void Index()
         {
-            reservasiView.TambahData();
-            int id = int.Parse(Console.ReadLine());
-            DateTime tanggal = DateTime.Parse(Console.ReadLine());
-            Kendaraan kendaraan = new Kendaraan()
+            List<Reservasi> reservasiList = reservasiRepository.GetAll();
+
+            foreach (Reservasi reservasi in reservasiList)
             {
-                ID_Kendaraan = int.Parse(Console.ReadLine())
-            };
-            Pelanggan pelanggan = new Pelanggan()
+                reservasi.Pelanggan = pelangganRepository.GetById(reservasi.ID_Pelanggan);
+                reservasi.Kendaraan = kendaraanRepository.GetById(reservasi.);
+
+                Console.WriteLine("ID Reservasi: {0}", reservasi.ID_Reservasi);
+                Console.WriteLine("Nama Pelanggan: {0}", reservasi.Pelanggan.Nama_Pelanggan);
+                Console.WriteLine("Jenis Kendaraan: {0}", reservasi.Kendaraan.Jenis_Kendaraan);
+                Console.WriteLine("Tanggal Reservasi: {0}", reservasi.Tgl_Reservasi);
+                Console.WriteLine("Tanggal Pengembalian: {0}", reservasi.Tgl_Pengembalian);
+                Console.WriteLine("Biaya: {0}", reservasi.Biaya);
+                Console.WriteLine();
+            }
+        }
+
+        public void Details(int id)
+        {
+            Reservasi reservasi = reservasiRepository.GetById(id);
+
+            if (reservasi == null)
             {
-                ID_Pelanggan = int.Parse(Console.ReadLine())
-            };
-            Reservasi reservasi = new Reservasi()
+                Console.WriteLine("Reservasi dengan ID {0} tidak ditemukan", id);
+            }
+            else
             {
-                ID_Reservasi = id,
-                Tanggal_Pesan = tanggal,
-                Kendaraan = kendaraan,
-                Pelanggan = pelanggan
-            };
-            Insert(reservasi);
+                reservasi.Pelanggan = pelangganRepository.GetById(reservasi.ID_Pelanggan);
+                reservasi.Kendaraan = kendaraanRepository.GetById(reservasi.ID_Kendaraan);
+
+                Console.WriteLine("ID Reservasi: {0}", reservasi.ID_Reservasi);
+                Console.WriteLine("Nama Pelanggan: {0}", reservasi.Pelanggan.Nama_Pelanggan);
+                Console.WriteLine("Jenis Kendaraan: {0}", reservasi.Kendaraan.Jenis_Kendaraan);
+                Console.WriteLine("Tanggal Reservasi: {0}", reservasi.Tgl_Reservasi);
+                Console.WriteLine("Tanggal Pengembalian: {0}", reservasi.Tgl_Pengembalian);
+                Console.WriteLine("Biaya: {0}", reservasi.Biaya);
+            }
         }
 
-        public void UbahData()
+        public void Create(Reservasi reservasi)
         {
-            reservasiView.UbahData();
-            int id = int.Parse(Console.ReadLine());
-            DateTime tanggal = DateTime.Parse(Console.ReadLine());
-            Kendaraan kendaraan = new Kendaraan()
+            try
             {
-                ID_Kendaraan = int.Parse(Console.ReadLine())
-            };
-            Pelanggan pelanggan = new Pelanggan()
+                reservasiRepository.Create(reservasi);
+
+                Console.WriteLine("Reservasi berhasil ditambahkan");
+            }
+            catch
             {
-                ID_Pelanggan = int.Parse(Console.ReadLine())
-            };
-            Reservasi reservasi = new Reservasi()
+                Console.WriteLine("Reservasi gagal ditambahkan");
+            }
+        }
+
+        public void Edit(int id, Reservasi reservasi)
+        {
+            try
             {
-                ID_Reservasi = id,
-                Tanggal_Pesan = tanggal,
-                Kendaraan = kendaraan,
-                Pelanggan = pelanggan
-            };
-            Update(id, reservasi);
-        }
+                reservasi.ID_Reservasi = id;
+                reservasiRepository.Update(reservasi);
 
-        public void HapusData()
-        {
-            reservasiView.HapusData();
-            int id = int.Parse(Console.ReadLine());
-            Delete(id);
-        }
-
-        public List<Reservasi> GetAll()
-        {
-            return reservasiModel.GetAll();
-        }
-
-        public Reservasi GetById(int id)
-        {
-            return reservasiModel.GetById(id);
-        }
-
-        public void Insert(Reservasi reservasi)
-        {
-            reservasiModel.TambahData(reservasi);
-        }
-
-        public void Update(int id, Reservasi reservasi)
-        {
-            reservasiModel.UbahData(reservasi);
+                Console.WriteLine("Reservasi berhasil diupdate");
+            }
+            catch
+            {
+                Console.WriteLine("Reservasi gagal diupdate");
+            }
         }
 
         public void Delete(int id)
         {
-            reservasiModel.HapusData(id);
+            Reservasi reservasi = reservasiRepository.GetById(id);
+
+            if (reservasi == null)
+            {
+                Console.WriteLine("Reservasi dengan ID {0} tidak ditemukan", id);
+            }
+            else
+            {
+                try
+                {
+                    reservasiRepository.Delete(id);
+
+                    Console.WriteLine("Reservasi berhasil dihapus");
+                }
+                catch
+                {
+                    Console.WriteLine("Reservasi gagal dihapus");
+                }
+            }
         }
     }
 }
